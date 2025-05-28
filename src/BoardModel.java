@@ -2,7 +2,9 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class BoardModel extends AbstractTableModel {
     private int rows;
@@ -11,9 +13,14 @@ public class BoardModel extends AbstractTableModel {
     private int score = 0;
     private int lives = 3;
     private long startTime = System.currentTimeMillis();
+    private boolean gameRunning = true;
 
     private PacMan pacman;
     private List<Ghost> ghosts = new ArrayList<>();
+    private List<Upgrade> upgrades = new ArrayList<>();
+    private UpgradeManager upgradeManager = new UpgradeManager();
+    private ImageIcon[] fruitIcons;
+    private Random random = new Random();
 
     public BoardModel(int rows, int cols) {
         this.rows = rows;
@@ -27,18 +34,22 @@ public class BoardModel extends AbstractTableModel {
             ImageIcon[][] pacmanFrames = spriteSheet.getPacmanFrames();
             pacman = new PacMan(rows / 2, cols / 2, pacmanFrames);
 
-            // Załaduj klatki animacji duchów i dodaj duchy
+            // Załaduj klatki animacji duchów
             for (int i = 0; i < 4; i++) {
                 ImageIcon[][] ghostFrames = spriteSheet.getGhostFrames(i);
                 Ghost ghost = new Ghost(2 + i, 2 + i, ghostFrames);
                 ghosts.add(ghost);
             }
+
+            // Załaduj ikony owoców
+            fruitIcons = spriteSheet.getFruitIcons();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         initializeMap();
         startAnimationThreads();
+        startUpgradeGenerationThread();
     }
 
     @Override
@@ -58,7 +69,14 @@ public class BoardModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int col) {
-        // Najpierw sprawdź postacie
+        // Najpierw sprawdź ulepszenia
+        for (Upgrade upgrade : upgrades) {
+            if (upgrade.getRow() == row && upgrade.getCol() == col) {
+                return upgrade.getIcon();
+            }
+        }
+
+        // Potem postacie
         if (pacman.getRow() == row && pacman.getCol() == col) {
             return pacman.getCurrentIcon();
         }
@@ -68,7 +86,7 @@ public class BoardModel extends AbstractTableModel {
             }
         }
 
-        // Potem elementy mapy
+        // Na końcu elementy mapy
         if (elements[row][col] == MapElement.WALL) {
             return ImageResources.WALL_ICON;
         } else if(elements[row][col] == MapElement.EMPTY) {
@@ -92,9 +110,9 @@ public class BoardModel extends AbstractTableModel {
     private void startAnimationThreads() {
         // Wątek animacji PacMana
         Thread pacmanAnimationThread = new Thread(() -> {
-            while (true) {
+            while (gameRunning) {
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(upgradeManager.isSpeedBoostActive() ? 125 : 250);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -108,7 +126,7 @@ public class BoardModel extends AbstractTableModel {
         // Wątki dla duchów
         for (Ghost ghost : ghosts) {
             Thread ghostThread = new Thread(() -> {
-                while (true) {
+                while (gameRunning) {
                     try {
                         Thread.sleep(400);
                     } catch (InterruptedException e) {
@@ -120,7 +138,9 @@ public class BoardModel extends AbstractTableModel {
                     ghost.move(this);
                     ghost.nextFrame();
 
-                    // Odśwież stare i nowe pole
+                    // NATYCHMIASTOWE sprawdzenie kolizji po ruchu ducha
+                    checkGhostCollisions();
+
                     fireTableCellUpdated(oldRow, oldCol);
                     fireTableCellUpdated(ghost.getRow(), ghost.getCol());
                 }
@@ -130,7 +150,83 @@ public class BoardModel extends AbstractTableModel {
         }
     }
 
-    public void movePacman(int dx, int dy) {
+    private void startUpgradeGenerationThread() {
+        Thread upgradeThread = new Thread(() -> {
+            while (gameRunning) {
+                try {
+                    Thread.sleep(5000); // Co 5 sekund
+                } catch (InterruptedException e) {
+                    break;
+                }
+
+                // 25% szansy na wygenerowanie ulepszenia
+                if (random.nextDouble() < 0.25) {
+                    generateRandomUpgrade();
+                }
+
+                // Usuń wygasłe ulepszenia
+                upgrades.removeIf(upgrade -> {
+                    if (upgrade.isExpired()) {
+                        fireTableCellUpdated(upgrade.getRow(), upgrade.getCol());
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        });
+        upgradeThread.setDaemon(true);
+        upgradeThread.start();
+    }
+
+    private void generateRandomUpgrade() {
+        List<int[]> emptySpaces = new ArrayList<>();
+        for (int i = 1; i < rows - 1; i++) {
+            for (int j = 1; j < cols - 1; j++) {
+                if (elements[i][j] == MapElement.EMPTY && !isOccupied(i, j)) {
+                    emptySpaces.add(new int[]{i, j});
+                }
+            }
+        }
+
+        if (!emptySpaces.isEmpty()) {
+            int[] pos = emptySpaces.get(random.nextInt(emptySpaces.size()));
+            UpgradeType type = UpgradeType.values()[random.nextInt(UpgradeType.values().length)];
+            ImageIcon icon = fruitIcons[random.nextInt(fruitIcons.length)];
+
+            Upgrade upgrade = new Upgrade(pos[0], pos[1], type, icon);
+            upgrades.add(upgrade);
+            fireTableCellUpdated(pos[0], pos[1]);
+        }
+    }
+
+    private boolean isOccupied(int row, int col) {
+        if (pacman.getRow() == row && pacman.getCol() == col) return true;
+        for (Ghost ghost : ghosts) {
+            if (ghost.getRow() == row && ghost.getCol() == col) return true;
+        }
+        for (Upgrade upgrade : upgrades) {
+            if (upgrade.getRow() == row && upgrade.getCol() == col) return true;
+        }
+        return false;
+    }
+
+    // NOWA METODA - sprawdza kolizje z duchami
+    private synchronized void checkGhostCollisions() {
+        if (!gameRunning || upgradeManager.isInvincibilityActive()) {
+            return;
+        }
+
+        for (Ghost ghost : ghosts) {
+            if (ghost.getRow() == pacman.getRow() && ghost.getCol() == pacman.getCol()) {
+                loseLife();
+                return; // Jedna kolizja na raz
+            }
+        }
+    }
+
+    public synchronized void movePacman(int dx, int dy) {
+        if (!gameRunning) return;
+
         int newRow = pacman.getRow() + dy;
         int newCol = pacman.getCol() + dx;
 
@@ -140,12 +236,81 @@ public class BoardModel extends AbstractTableModel {
             int oldRow = pacman.getRow();
             int oldCol = pacman.getCol();
 
+            // Sprawdź kolizję z ulepszeniami
+            checkUpgradeCollision(newRow, newCol);
+
             pacman.setRow(newRow);
             pacman.setCol(newCol);
             pacman.setDirection(getDirectionFromDelta(dx, dy));
 
+            // NATYCHMIASTOWE sprawdzenie kolizji po ruchu Pac-Mana
+            checkGhostCollisions();
+
             fireTableCellUpdated(oldRow, oldCol);
             fireTableCellUpdated(newRow, newCol);
+        }
+    }
+
+    private void checkUpgradeCollision(int row, int col) {
+        Iterator<Upgrade> iterator = upgrades.iterator();
+        while (iterator.hasNext()) {
+            Upgrade upgrade = iterator.next();
+            if (upgrade.getRow() == row && upgrade.getCol() == col) {
+                applyUpgrade(upgrade.getType());
+                iterator.remove();
+                fireTableCellUpdated(row, col);
+                break;
+            }
+        }
+    }
+
+    private void applyUpgrade(UpgradeType type) {
+        switch (type) {
+            case SPEED_BOOST:
+                upgradeManager.activateUpgrade(type);
+                addScore(upgradeManager.isDoublePointsActive() ? 200 : 100);
+                break;
+            case INVINCIBILITY:
+                upgradeManager.activateUpgrade(type);
+                addScore(upgradeManager.isDoublePointsActive() ? 300 : 150);
+                break;
+            case DOUBLE_POINTS:
+                upgradeManager.activateUpgrade(type);
+                addScore(upgradeManager.isDoublePointsActive() ? 400 : 200);
+                break;
+            case GHOST_FREEZE:
+                upgradeManager.activateUpgrade(type);
+                addScore(upgradeManager.isDoublePointsActive() ? 500 : 250);
+                break;
+            case TELEPORT:
+                teleportPacman();
+                addScore(upgradeManager.isDoublePointsActive() ? 600 : 300);
+                break;
+        }
+    }
+
+    private void teleportPacman() {
+        List<int[]> emptySpaces = new ArrayList<>();
+        for (int i = 1; i < rows - 1; i++) {
+            for (int j = 1; j < cols - 1; j++) {
+                if (elements[i][j] == MapElement.EMPTY && !isOccupied(i, j)) {
+                    emptySpaces.add(new int[]{i, j});
+                }
+            }
+        }
+
+        if (!emptySpaces.isEmpty()) {
+            int[] pos = emptySpaces.get(random.nextInt(emptySpaces.size()));
+            int oldRow = pacman.getRow();
+            int oldCol = pacman.getCol();
+            pacman.setRow(pos[0]);
+            pacman.setCol(pos[1]);
+
+            // Sprawdź kolizje po teleportacji
+            checkGhostCollisions();
+
+            fireTableCellUpdated(oldRow, oldCol);
+            fireTableCellUpdated(pos[0], pos[1]);
         }
     }
 
@@ -164,6 +329,10 @@ public class BoardModel extends AbstractTableModel {
         return (MapElement) elements[row][col];
     }
 
+    public synchronized void stopGame() {
+        gameRunning = false;
+    }
+
     public int getElapsedTime() {
         return (int)((System.currentTimeMillis() - startTime) / 1000);
     }
@@ -171,5 +340,22 @@ public class BoardModel extends AbstractTableModel {
     public int getScore() { return score; }
     public int getLives() { return lives; }
     public void addScore(int pts) { score += pts; }
-    public void loseLife() { lives--; }
+
+    public synchronized void loseLife() {
+        if (!gameRunning) return;
+
+        lives--;
+        System.out.println("Life lost! Lives remaining: " + lives); // Debug
+
+        if (lives <= 0) {
+            gameRunning = false;
+            System.out.println("Game Over!"); // Debug
+        } else {
+            // Krótka nieśmiertelność po utracie życia
+            upgradeManager.activateUpgrade(UpgradeType.INVINCIBILITY);
+        }
+    }
+
+    public boolean isGameRunning() { return gameRunning && lives > 0; }
+    public UpgradeManager getUpgradeManager() { return upgradeManager; }
 }

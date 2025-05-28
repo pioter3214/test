@@ -10,7 +10,11 @@ public class Ghost extends AbstractCharacter {
 
     @Override
     public void move(BoardModel model) {
-        // Prosty ruch losowy ducha
+        // Sprawdź czy duchy są zamrożone
+        if (model.getUpgradeManager().isGhostFreezeActive()) {
+            return; // Nie ruszaj się
+        }
+
         int[] dx = {-1, 1, 0, 0};
         int[] dy = {0, 0, -1, 1};
         int newRow, newCol;
