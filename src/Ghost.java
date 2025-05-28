@@ -15,12 +15,15 @@ public class Ghost extends AbstractCharacter {
         int[] dy = {0, 0, -1, 1};
         int newRow, newCol;
         int tries = 0;
+
         do {
             direction = random.nextInt(4);
             newRow = row + dy[direction];
             newCol = col + dx[direction];
             tries++;
-        } while ((newRow < 0 || newRow >= model.getRowCount() || newCol < 0 || newCol >= model.getColumnCount() || model.getElementAt(newRow, newCol) == MapElement.WALL) && tries < 10);
+        } while ((newRow < 0 || newRow >= model.getRowCount() ||
+                newCol < 0 || newCol >= model.getColumnCount() ||
+                model.getElementAt(newRow, newCol) == MapElement.WALL) && tries < 10);
 
         if (tries < 10) {
             row = newRow;

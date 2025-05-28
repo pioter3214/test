@@ -21,7 +21,6 @@ public class Game extends JFrame {
         add(statusPanel, BorderLayout.NORTH);
         add(board, BorderLayout.CENTER);
 
-        // WAŻNE - focus na board
         board.requestFocusInWindow();
 
         int cellSize = 32;

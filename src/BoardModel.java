@@ -30,7 +30,7 @@ public class BoardModel extends AbstractTableModel {
             // Załaduj klatki animacji duchów i dodaj duchy
             for (int i = 0; i < 4; i++) {
                 ImageIcon[][] ghostFrames = spriteSheet.getGhostFrames(i);
-                Ghost ghost = new Ghost(1 + i, 1 + i, ghostFrames);
+                Ghost ghost = new Ghost(2 + i, 2 + i, ghostFrames);
                 ghosts.add(ghost);
             }
         } catch (IOException e) {
@@ -157,7 +157,6 @@ public class BoardModel extends AbstractTableModel {
         return pacman.getDirection();
     }
 
-    // DODANE - wymagane przez Ghost
     public MapElement getElementAt(int row, int col) {
         if (row < 0 || row >= rows || col < 0 || col >= cols) {
             return MapElement.WALL;
