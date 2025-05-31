@@ -8,7 +8,13 @@ public class SpriteSheet {
     private BufferedImage sheet;
 
     public SpriteSheet(String path) throws IOException {
-        sheet = ImageIO.read(new File(path));
+        try {
+            sheet = ImageIO.read(new File(path));
+            if (sheet == null) throw new IOException("Nie można wczytać pliku: " + path);
+        } catch (IOException e) {
+            System.err.println("Błąd ładowania obrazka: " + path);
+            throw e;
+        }
     }
 
     public ImageIcon getPacmanFrame(int frameIndex) {
