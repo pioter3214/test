@@ -7,12 +7,12 @@ import java.io.IOException;
 public class SpriteSheet {
     private BufferedImage sheet;
 
-    public SpriteSheet(String path) throws IOException {
+    public SpriteSheet(String resourceName) throws IOException {
         try {
-            sheet = ImageIO.read(new File(path));
-            if (sheet == null) throw new IOException("Nie można wczytać pliku: " + path);
+            sheet = ImageIO.read(SpriteSheet.class.getResource("/" + resourceName));
+            if (sheet == null) throw new IOException("Nie można wczytać pliku: " + resourceName);
         } catch (IOException e) {
-            System.err.println("Błąd ładowania obrazka: " + path);
+            System.err.println("Błąd ładowania obrazka: " + resourceName);
             throw e;
         }
     }

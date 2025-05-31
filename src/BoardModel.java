@@ -29,11 +29,11 @@ public class BoardModel extends AbstractTableModel {
         this.elements = new Object[rows][cols];
 
         // Debug: wypisz ścieżki do plików
-        System.out.println("Szukam sprite-sheet-pacman.jpg w: " + new File("sprite-sheet-pacman.jpg").getAbsolutePath());
-        System.out.println("Szukam point.png w: " + new File("point.png").getAbsolutePath());
+        System.out.println("Szukam sprite-sheet-pacman.jpg w: " + new File("resources/sprite-sheet-pacman.jpg").getAbsolutePath());
+        System.out.println("Szukam point.png w: " + new File("resources/point.png").getAbsolutePath());
 
         try {
-            SpriteSheet spriteSheet = new SpriteSheet("/Users/piotr/Downloads/pacmangui/src/sprite-sheet-pacman.jpg");
+            SpriteSheet spriteSheet = new SpriteSheet("sprite-sheet-pacman.jpg");
             ImageIcon[][] pacmanFrames = spriteSheet.getPacmanFrames();
             pacman = new PacMan(rows / 2, cols / 2, pacmanFrames);
 
