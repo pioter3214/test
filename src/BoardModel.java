@@ -74,14 +74,20 @@ public class BoardModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int col) {
-        if (pacman == null) return null; // zabezpieczenie przed NullPointerException
+        // NAJPIERW sprawdź punkty - nawet jak pacman jest null!
+        if (elements[row][col] == MapElement.DOT) {
+            return ImageResources.DOT_ICON;
+        }
 
+        // Sprawdź ulepszenia
         for (Upgrade upgrade : upgrades) {
             if (upgrade.getRow() == row && upgrade.getCol() == col) {
                 return upgrade.getIcon();
             }
         }
-        if (pacman.getRow() == row && pacman.getCol() == col) {
+
+        // Sprawdź postacie (z zabezpieczeniem)
+        if (pacman != null && pacman.getRow() == row && pacman.getCol() == col) {
             return pacman.getCurrentIcon();
         }
         for (Ghost ghost : ghosts) {
@@ -89,16 +95,17 @@ public class BoardModel extends AbstractTableModel {
                 return ghost.getCurrentIcon();
             }
         }
-        if (elements[row][col] == MapElement.DOT) {
-            return ImageResources.DOT_ICON;
-        }
+
+        // Elementy mapy
         if (elements[row][col] == MapElement.WALL) {
             return ImageResources.WALL_ICON;
         } else if (elements[row][col] == MapElement.EMPTY) {
             return ImageResources.EMPTY_ICON;
         }
+
         return null;
     }
+
 
     private void initializeMap() {
         for (int i = 0; i < rows; i++) {
