@@ -30,7 +30,6 @@ public class HighScoreManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private static void loadScores() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SCORES_FILE))) {
             scores = (List<ScoreEntry>) ois.readObject();

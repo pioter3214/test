@@ -331,9 +331,15 @@ public class BoardModel extends AbstractTableModel {
         return (int)((System.currentTimeMillis() - startTime) / 1000);
     }
 
-    public int getScore() { return score; }
-    public int getLives() { return lives; }
-    public void addScore(int pts) { score += pts; }
+    public int getScore() {
+        return score;
+    }
+    public int getLives() {
+        return lives;
+    }
+    public void addScore(int pts) {
+        score += pts;
+    }
     public synchronized void loseLife() {
         if (!gameRunning) return;
         lives--;
@@ -341,6 +347,10 @@ public class BoardModel extends AbstractTableModel {
             gameRunning = false;
         }
     }
-    public boolean isGameRunning() { return gameRunning && lives > 0; }
-    public UpgradeManager getUpgradeManager() { return upgradeManager; }
+    public boolean isGameRunning() {
+        return gameRunning && lives > 0;
+    }
+    public UpgradeManager getUpgradeManager() {
+        return upgradeManager;
+    }
 }

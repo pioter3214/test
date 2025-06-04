@@ -10,8 +10,7 @@ public class ImageResources {
             return new ImageIcon(ImageResources.class.getResource(path));
         } catch (Exception e) {
             System.err.println("Nie można załadować obrazka: " + path);
-            // Zwróć domyślną ikonę lub null
-            return new ImageIcon(); // Pusta ikona zamiast null
+            return new ImageIcon(); //empty
         }
     }
 }

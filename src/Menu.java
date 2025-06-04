@@ -6,21 +6,21 @@ public class Menu extends JFrame {
     private int gameHeight;
 
     Menu(){
-        setTitle("Pac-Man Game");
+        setTitle("PacMan");
         JPanel panel = new JPanel(new GridLayout(3, 1, 10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
         JButton newGameButton = new JButton("New Game");
         newGameButton.addActionListener(e -> {
             try {
-                gameWidth = Integer.parseInt(JOptionPane.showInputDialog("Podaj szerokość mapy od 10 do 100"));
+                gameWidth = Integer.parseInt(JOptionPane.showInputDialog("Select number of cols fom 10 to 100"));
                 if (gameWidth < 10 || gameWidth > 100) throw new WrongNumberException();
-                gameHeight = Integer.parseInt(JOptionPane.showInputDialog("Podaj wysokość mapy od 10 do 100"));
+                gameHeight = Integer.parseInt(JOptionPane.showInputDialog("Select number of rows from 10 to 100"));
                 if (gameHeight < 10 || gameHeight > 100) throw new WrongNumberException();
                 this.dispose();
                 SwingUtilities.invokeLater(() -> new Game(gameHeight, gameWidth));
             } catch (WrongNumberException | NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Proszę wprowadzić poprawną liczbę", "Błąd", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Select correct number", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 

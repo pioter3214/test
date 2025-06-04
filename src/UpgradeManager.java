@@ -27,21 +27,19 @@ public class UpgradeManager {
 
         switch (type) {
             case SPEED_BOOST:
-                speedBoostEnd = currentTime + 10000; // 10 sekund
+                speedBoostEnd = currentTime + 10000;
                 break;
             case INVINCIBILITY:
-                // Dłuższa nieśmiertelność jeśli zebrana z power-up, krótsza po utracie życia
                 long duration = (invincibilityEnd > currentTime) ? 8000 : 2000;
                 invincibilityEnd = currentTime + duration;
                 break;
             case DOUBLE_POINTS:
-                doublePointsEnd = currentTime + 15000; // 15 sekund
+                doublePointsEnd = currentTime + 15000;
                 break;
             case GHOST_FREEZE:
-                ghostFreezeEnd = currentTime + 5000; // 5 sekund
+                ghostFreezeEnd = currentTime + 5000;
                 break;
             case TELEPORT:
-                // Teleportacja jest natychmiastowa
                 break;
         }
     }

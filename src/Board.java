@@ -20,7 +20,6 @@ public class Board extends JTable {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                // Skrót Ctrl+Shift+Q - powrót do menu
                 if (e.isControlDown() && e.isShiftDown() && e.getKeyCode() == KeyEvent.VK_Q) {
                     boardModel.stopGame();
                     JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(Board.this);
@@ -31,7 +30,6 @@ public class Board extends JTable {
                     return;
                 }
 
-                // Sterowanie Pac-Manem
                 int code = e.getKeyCode();
                 if (code == KeyEvent.VK_LEFT) {
                     boardModel.movePacman(-1, 0);

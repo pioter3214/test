@@ -19,9 +19,16 @@ public class Upgrade {
         return System.currentTimeMillis() - spawnTime > LIFESPAN;
     }
 
-    // Gettery
-    public int getRow() { return row; }
-    public int getCol() { return col; }
-    public UpgradeType getType() { return type; }
-    public ImageIcon getIcon() { return icon; }
+    public int getRow() {
+        return row;
+    }
+    public int getCol() {
+        return col;
+    }
+    public UpgradeType getType() {
+        return type;
+    }
+    public ImageIcon getIcon() {
+        return icon;
+    }
 }

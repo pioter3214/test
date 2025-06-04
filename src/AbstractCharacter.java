@@ -10,7 +10,7 @@ public abstract class AbstractCharacter {
         this.row = row;
         this.col = col;
         this.frames = frames;
-        this.direction = 1; // domyślnie prawo
+        this.direction = 1;
         this.currentFrame = 0;
     }
 
@@ -24,11 +24,22 @@ public abstract class AbstractCharacter {
         currentFrame = (currentFrame + 1) % frames[direction].length;
     }
 
-    // Gettery i settery
-    public int getRow() { return row; }
-    public int getCol() { return col; }
-    public void setRow(int row) { this.row = row; }
-    public void setCol(int col) { this.col = col; }
-    public void setDirection(int direction) { this.direction = direction; }
-    public int getDirection() { return direction; }
+    public int getRow() {
+        return row;
+    }
+    public int getCol() {
+        return col;
+    }
+    public void setRow(int row) {
+        this.row = row;
+    }
+    public void setCol(int col) {
+        this.col = col;
+    }
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+    public int getDirection() {
+        return direction;
+    }
 }

@@ -38,7 +38,6 @@ public class Game extends JFrame {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setVisible(true);
 
-        // Wątek monitorowania końca gry - częstsze sprawdzanie
         new Thread(() -> {
             while (model.isGameRunning()) {
                 try { Thread.sleep(50); } catch (InterruptedException e) { break; }
@@ -48,7 +47,6 @@ public class Game extends JFrame {
             }
         }).start();
 
-        // Wątek aktualizacji statusu
         new Thread(() -> {
             while (model.isGameRunning()) {
                 SwingUtilities.invokeLater(() -> {
@@ -56,7 +54,6 @@ public class Game extends JFrame {
                     timeLabel.setText("Time: " + model.getElapsedTime());
                     livesLabel.setText("Lives: " + model.getLives());
 
-                    // Sprawdzenie końca gry również tutaj
                     if (model.getLives() <= 0 && !gameEndHandled) {
                         handleGameEnd();
                     }

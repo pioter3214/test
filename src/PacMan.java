@@ -7,7 +7,5 @@ public class PacMan extends AbstractCharacter {
     }
 
     @Override
-    public void move(BoardModel model) {
-        // Ruch sterowany przez gracza
-    }
+    public void move(BoardModel model) {}
 }
