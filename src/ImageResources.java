@@ -9,7 +9,7 @@ public class ImageResources {
         try {
             return new ImageIcon(ImageResources.class.getResource(path));
         } catch (Exception e) {
-            System.err.println("Nie można załadować obrazka: " + path);
+            System.err.println("Can't load : " + path);
             return new ImageIcon(); //empty
         }
     }

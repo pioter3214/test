@@ -5,7 +5,7 @@ public class Upgrade {
     private UpgradeType type;
     private ImageIcon icon;
     private long spawnTime;
-    private static final long LIFESPAN = 10000; // 10 sekund życia
+    private static final long LIFESPAN = 10000;
 
     public Upgrade(int row, int col, UpgradeType type, ImageIcon icon) {
         this.row = row;

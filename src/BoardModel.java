@@ -42,9 +42,8 @@ public class BoardModel extends AbstractTableModel {
             fruitIcons = spriteSheet.getFruitIcons();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
-                    "Nie można załadować pliku sprite-sheet-pacman.jpg lub point.png!\n" +
-                            "Sprawdź, czy pliki są w katalogu projektu.\nSzczegóły: " + e.getMessage(),
-                    "Błąd ładowania obrazka", JOptionPane.ERROR_MESSAGE);
+                    "Cannot load file" + e.getMessage(),
+                    "Error loading file", JOptionPane.ERROR_MESSAGE);
             pacman = null;
         }
 
@@ -70,27 +69,27 @@ public class BoardModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int row, int col) {
-        // 1. Najpierw PacMan
+        //PacMan
         if (pacman != null && pacman.getRow() == row && pacman.getCol() == col) {
             return pacman.getCurrentIcon();
         }
-        // 2. Potem duchy
+        //Ghost
         for (Ghost ghost : ghosts) {
             if (ghost.getRow() == row && ghost.getCol() == col) {
                 return ghost.getCurrentIcon();
             }
         }
-        // 3. Potem ulepszenia (jeśli są)
+        //Upgrade
         for (Upgrade upgrade : upgrades) {
             if (upgrade.getRow() == row && upgrade.getCol() == col) {
                 return upgrade.getIcon();
             }
         }
-        // 4. Punkty
+        //Point
         if (elements[row][col] == MapElement.DOT) {
             return ImageResources.DOT_ICON;
         }
-        // 5. Ściany i puste pola
+        //Empty
         if (elements[row][col] == MapElement.WALL) {
             return ImageResources.WALL_ICON;
         } else if (elements[row][col] == MapElement.EMPTY) {
@@ -231,7 +230,6 @@ public class BoardModel extends AbstractTableModel {
             int oldRow = pacman.getRow();
             int oldCol = pacman.getCol();
 
-            // Zbieranie punktu
             if (elements[newRow][newCol] == MapElement.DOT) {
                 elements[newRow][newCol] = MapElement.EMPTY;
                 addScore(10);

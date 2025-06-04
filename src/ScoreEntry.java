@@ -2,28 +2,28 @@ import java.io.Serializable;
 
 public class ScoreEntry implements Serializable {
     private static final long serialVersionUID = 1L;
+    private String player;
+    private int points;
+    private long timeMillis;
 
-    private String playerName;
-    private int score;
-    private int timeSeconds;
-    private long date;
-
-    public ScoreEntry(String playerName, int score, int timeSeconds) {
-        this.playerName = playerName;
-        this.score = score;
-        this.timeSeconds = timeSeconds;
-        this.date = System.currentTimeMillis();
+    public ScoreEntry(String player, int points, long timeMillis) {
+        this.player = player;
+        this.points = points;
+        this.timeMillis = timeMillis;
     }
 
-    // Gettery
-    public String getPlayerName() { return playerName; }
-    public int getScore() { return score; }
-    public int getTimeSeconds() { return timeSeconds; }
-    public long getDate() { return date; }
+    public String getPlayer() {
+        return player;
+    }
+    public int getPoints() {
+        return points;
+    }
+    public long getTimeMillis() {
+        return timeMillis;
+    }
 
     @Override
     public String toString() {
-        return String.format("%s - %d pts (%d:%02d)",
-                playerName, score, timeSeconds / 60, timeSeconds % 60);
+        return "Name: " + player + " | Score: " + points + " | Time: " + timeMillis;
     }
 }

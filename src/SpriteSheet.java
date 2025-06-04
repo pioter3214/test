@@ -8,7 +8,7 @@ public class SpriteSheet {
 
     public SpriteSheet(String resourceName) throws IOException {
         var is = getClass().getResourceAsStream("/" + resourceName);
-        if (is == null) throw new IOException("Brak pliku w resources: " + resourceName);
+        if (is == null) throw new IOException("Missing sprite file in resources: " + resourceName);
         sheet = ImageIO.read(is);
     }
 

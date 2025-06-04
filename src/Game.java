@@ -83,7 +83,7 @@ public class Game extends JFrame {
 
         if (playerName != null && !playerName.trim().isEmpty()) {
             ScoreEntry entry = new ScoreEntry(playerName.trim(), model.getScore(), model.getElapsedTime());
-            HighScoreManager.addScore(entry);
+            HighScoreManager.addScore(entry.getPlayer(),entry.getPoints(),entry.getTimeMillis());
         }
 
         dispose();
