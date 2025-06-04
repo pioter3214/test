@@ -50,6 +50,9 @@ public class Game extends JFrame {
         new Thread(() -> {
             while (model.isGameRunning()) {
                 SwingUtilities.invokeLater(() -> {
+                    if (model.isGameRunning()) {
+                        model.checkGhostCollisions();
+                    }
                     scoreLabel.setText("Score: " + model.getScore());
                     timeLabel.setText("Time: " + model.getElapsedTime());
                     livesLabel.setText("Lives: " + model.getLives());

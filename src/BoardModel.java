@@ -207,10 +207,11 @@ public class BoardModel extends AbstractTableModel {
         return false;
     }
 
-    private synchronized void checkGhostCollisions() {
+    synchronized void checkGhostCollisions() {
         if (!gameRunning || upgradeManager.isInvincibilityActive() || pacman == null) {
             return;
         }
+
         for (Ghost ghost : ghosts) {
             if (ghost.getRow() == pacman.getRow() && ghost.getCol() == pacman.getCol()) {
                 loseLife();
@@ -240,6 +241,7 @@ public class BoardModel extends AbstractTableModel {
             pacman.setRow(newRow);
             pacman.setCol(newCol);
             pacman.setDirection(getDirectionFromDelta(dx, dy));
+
             checkGhostCollisions();
 
             fireTableCellUpdated(oldRow, oldCol);
@@ -286,6 +288,8 @@ public class BoardModel extends AbstractTableModel {
     }
 
     private void teleportPacman() {
+        System.out.println("Teleport activated!"); // Debugowanie
+
         List<int[]> emptySpaces = new ArrayList<>();
         for (int i = 1; i < rows - 1; i++) {
             for (int j = 1; j < cols - 1; j++) {
@@ -294,17 +298,26 @@ public class BoardModel extends AbstractTableModel {
                 }
             }
         }
+
         if (!emptySpaces.isEmpty()) {
-            int[] pos = emptySpaces.get(random.nextInt(emptySpaces.size()));
             int oldRow = pacman.getRow();
             int oldCol = pacman.getCol();
+
+            int[] pos = emptySpaces.get(random.nextInt(emptySpaces.size()));
             pacman.setRow(pos[0]);
             pacman.setCol(pos[1]);
+
             checkGhostCollisions();
+
             fireTableCellUpdated(oldRow, oldCol);
             fireTableCellUpdated(pos[0], pos[1]);
+
+
+        } else {
+            System.out.println("No empty spaces available for teleport!"); // Debugowanie
         }
     }
+
 
     private int getDirectionFromDelta(int dx, int dy) {
         if (dx == -1) return 0; // left
