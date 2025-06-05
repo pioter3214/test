@@ -469,67 +469,12 @@ public class BoardModel extends AbstractTableModel {
                 upgradeManager.activateUpgrade(type);
                 addScore(upgradeManager.isDoublePointsActive() ? 500 : 250);
                 break;
-            case TELEPORT:
-                teleportPacman();
-                addScore(upgradeManager.isDoublePointsActive() ? 600 : 300);
+            case EXTRA_LIFE:
+                System.out.println("add extra life");
+                if (lives < 4) lives++;
                 break;
         }
     }
-
-    private void teleportPacman() {
-        System.out.println("Teleport activated!");
-
-        List<int[]> availableSpaces = new ArrayList<>();
-        for (int i = 1; i < rows - 1; i++) {
-            for (int j = 1; j < cols - 1; j++) {
-                if ((elements[i][j] == MapElement.EMPTY || elements[i][j] == MapElement.DOT)
-                        && !isOccupiedByCharacter(i, j)) {
-                    availableSpaces.add(new int[]{i, j});
-                }
-            }
-        }
-
-        if (!availableSpaces.isEmpty()) {
-            Random random = new Random();
-            int[] newPos = availableSpaces.get(random.nextInt(availableSpaces.size()));
-
-            int oldRow = pacman.getRow();
-            int oldCol = pacman.getCol();
-
-            pacman.setRow(newPos[0]);
-            pacman.setCol(newPos[1]);
-
-            if (elements[newPos[0]][newPos[1]] == MapElement.DOT) {
-                elements[newPos[0]][newPos[1]] = MapElement.EMPTY;
-                addScore(upgradeManager.isDoublePointsActive() ? 20 : 10);
-            }
-
-            System.out.println("PacMan teleported to: (" + newPos[0] + "," + newPos[1] + ")");
-
-            fireTableCellUpdated(oldRow, oldCol);
-            fireTableCellUpdated(newPos[0], newPos[1]);
-        } else {
-            System.out.println("No available spaces for teleport!");
-        }
-    }
-
-
-    private boolean isOccupiedByCharacter(int row, int col) {
-        if (pacman != null && pacman.getRow() == row && pacman.getCol() == col) {
-            return true;
-        }
-
-        if (ghosts != null) {
-            for (Ghost ghost : ghosts) {
-                if (ghost.getRow() == row && ghost.getCol() == col) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
 
     private int getDirectionFromDelta(int dx, int dy) {
         if (dx == -1) return 0; // left

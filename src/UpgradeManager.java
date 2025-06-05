@@ -5,6 +5,7 @@ public class UpgradeManager {
     private long invincibilityEnd = 0;
     private long doublePointsEnd = 0;
     private long ghostFreezeEnd = 0;
+    private long extraLifeEnd = 0;
 
     public boolean isSpeedBoostActive() {
         return System.currentTimeMillis() < speedBoostEnd;
@@ -20,6 +21,9 @@ public class UpgradeManager {
 
     public boolean isGhostFreezeActive() {
         return System.currentTimeMillis() < ghostFreezeEnd;
+    }
+    public boolean extraLifeActivation() {
+        return System.currentTimeMillis() < extraLifeEnd;
     }
 
     public void activateUpgrade(UpgradeType type) {
@@ -38,17 +42,19 @@ public class UpgradeManager {
             case GHOST_FREEZE:
                 ghostFreezeEnd = currentTime + 5000;
                 break;
-            case TELEPORT:
+            case EXTRA_LIFE:
+                extraLifeEnd = currentTime + 5000; //info purpouse
                 break;
         }
     }
 
     public List<String> getActiveEffects() {
         List<String> effects = new ArrayList<>();
-        if (isSpeedBoostActive()) effects.add("SPEED BOOST");
+        if (isSpeedBoostActive()) effects.add("GHOST SPEED BOOST");
         if (isInvincibilityActive()) effects.add("INVINCIBILITY");
         if (isDoublePointsActive()) effects.add("DOUBLE POINTS");
         if (isGhostFreezeActive()) effects.add("GHOST FREEZE");
+        if (extraLifeActivation()) effects.add("EXTRA LIFE");
         return effects;
     }
 }
