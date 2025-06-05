@@ -100,38 +100,30 @@ public class BoardModel extends AbstractTableModel {
 
 
     private void initializeMap() {
-        // Inicjalizacja - wszystko jako ściany
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 elements[i][j] = MapElement.WALL;
             }
         }
 
-        // Generuj prawdziwy labirynt
         generatePerfectMaze();
 
-        // Eliminuj ślepe uliczki
         eliminateDeadEnds();
 
-        // Dodaj kropki w przejściach
         placeDots();
 
-        // Zapewnij bezpieczną pozycję startową dla PacMana
         ensureSafePacmanStart();
     }
 
     private void generatePerfectMaze() {
-        // Generator oparty na Recursive Backtracking z modyfikacjami
         boolean[][] visited = new boolean[rows][cols];
         Stack<int[]> stack = new Stack<>();
 
-        // Rozpocznij od centrum (lub najbliższego nieparzystego punktu)
         int startRow = rows / 2;
         int startCol = cols / 2;
         if (startRow % 2 == 0) startRow--;
         if (startCol % 2 == 0) startCol--;
 
-        // Upewnij się, że start jest w granicach
         startRow = Math.max(1, Math.min(startRow, rows - 2));
         startCol = Math.max(1, Math.min(startCol, cols - 2));
 
@@ -146,31 +138,25 @@ public class BoardModel extends AbstractTableModel {
             int row = current[0];
             int col = current[1];
 
-            // Znajdź nieodwiedzonych sąsiadów (oddalonych o 2 komórki)
             List<int[]> neighbors = getUnvisitedNeighbors(row, col, visited);
 
             if (!neighbors.isEmpty()) {
-                // Wybierz losowego sąsiada
                 int[] next = neighbors.get(random.nextInt(neighbors.size()));
                 int nextRow = next[0];
                 int nextCol = next[1];
 
-                // Wykuj ścieżkę do sąsiada
                 carvePath(row, col, nextRow, nextCol);
                 visited[nextRow][nextCol] = true;
                 stack.push(new int[]{nextRow, nextCol});
             } else {
-                // Backtrack
                 stack.pop();
             }
         }
     }
 
     private void carvePath(int fromRow, int fromCol, int toRow, int toCol) {
-        // Wykuj komórkę docelową
         elements[toRow][toCol] = MapElement.EMPTY;
 
-        // Wykuj ścianę między komórkami (dokładnie w połowie)
         int wallRow = fromRow + (toRow - fromRow) / 2;
         int wallCol = fromCol + (toCol - fromCol) / 2;
         elements[wallRow][wallCol] = MapElement.EMPTY;
@@ -189,7 +175,6 @@ public class BoardModel extends AbstractTableModel {
                 int row = deadEnd[0];
                 int col = deadEnd[1];
 
-                // Z 40% prawdopodobieństwem dodaj połączenie
                 if (random.nextDouble() < 0.4) {
                     if (addRandomConnection(row, col)) {
                         changed = true;
@@ -258,7 +243,7 @@ public class BoardModel extends AbstractTableModel {
 
     private List<int[]> getUnvisitedNeighbors(int row, int col, boolean[][] visited) {
         List<int[]> neighbors = new ArrayList<>();
-        int[][] directions = {{0, 2}, {2, 0}, {0, -2}, {-2, 0}}; // prawo, dół, lewo, góra
+        int[][] directions = {{0, 2}, {2, 0}, {0, -2}, {-2, 0}};
 
         for (int[] dir : directions) {
             int newRow = row + dir[0];
@@ -287,7 +272,6 @@ public class BoardModel extends AbstractTableModel {
         int centerRow = rows / 2;
         int centerCol = cols / 2;
 
-        // Stwórz 3x3 obszar bezpieczny dla PacMana
         for (int i = centerRow - 1; i <= centerRow + 1; i++) {
             for (int j = centerCol - 1; j <= centerCol + 1; j++) {
                 if (i >= 0 && i < rows && j >= 0 && j < cols) {
@@ -416,14 +400,11 @@ public class BoardModel extends AbstractTableModel {
             int oldRow = pacman.getRow();
             int oldCol = pacman.getCol();
 
-            // NAJPIERW sprawdź kolizję PRZED ruchem
             if (checkCollisionAtPosition(newRow, newCol)) {
-                System.out.println("Collision detected BEFORE move!"); // Debug
                 loseLife();
                 return;
             }
 
-            // Przesuń PacMana
             if (elements[newRow][newCol] == MapElement.DOT) {
                 elements[newRow][newCol] = MapElement.EMPTY;
                 addScore(upgradeManager.isDoublePointsActive() ? 20 : 10);
@@ -435,7 +416,6 @@ public class BoardModel extends AbstractTableModel {
             pacman.setCol(newCol);
             pacman.setDirection(getDirectionFromDelta(dx, dy));
 
-            // PONOWNIE sprawdź kolizję PO ruchu
             checkGhostCollisions();
 
             fireTableCellUpdated(oldRow, oldCol);
@@ -513,14 +493,12 @@ public class BoardModel extends AbstractTableModel {
             Random random = new Random();
             int[] newPos = availableSpaces.get(random.nextInt(availableSpaces.size()));
 
-            // DODANO: zapisanie starej pozycji
             int oldRow = pacman.getRow();
             int oldCol = pacman.getCol();
 
             pacman.setRow(newPos[0]);
             pacman.setCol(newPos[1]);
 
-            // DODANO: automatyczne zbieranie kropek
             if (elements[newPos[0]][newPos[1]] == MapElement.DOT) {
                 elements[newPos[0]][newPos[1]] = MapElement.EMPTY;
                 addScore(upgradeManager.isDoublePointsActive() ? 20 : 10);
@@ -528,7 +506,6 @@ public class BoardModel extends AbstractTableModel {
 
             System.out.println("PacMan teleported to: (" + newPos[0] + "," + newPos[1] + ")");
 
-            // DODANO: aktualizacja wyświetlania
             fireTableCellUpdated(oldRow, oldCol);
             fireTableCellUpdated(newPos[0], newPos[1]);
         } else {
@@ -538,12 +515,10 @@ public class BoardModel extends AbstractTableModel {
 
 
     private boolean isOccupiedByCharacter(int row, int col) {
-        // Sprawdź czy PacMan jest na tej pozycji
         if (pacman != null && pacman.getRow() == row && pacman.getCol() == col) {
             return true;
         }
 
-        // Sprawdź czy któryś duch jest na tej pozycji
         if (ghosts != null) {
             for (Ghost ghost : ghosts) {
                 if (ghost.getRow() == row && ghost.getCol() == col) {
