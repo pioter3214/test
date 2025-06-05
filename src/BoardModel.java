@@ -10,8 +10,9 @@ public class BoardModel extends AbstractTableModel {
     private Object[][] elements;
     private int score = 0;
     private int lives = 3;
-    private long startTime = System.currentTimeMillis();
     private boolean gameRunning = true;
+
+    private int time = 0;
 
     private PacMan pacman;
     private List<Ghost> ghosts = new ArrayList<>();
@@ -113,6 +114,8 @@ public class BoardModel extends AbstractTableModel {
         placeDots();
 
         ensureSafePacmanStart();
+
+        gameTimer();
     }
 
     private void generatePerfectMaze() {
@@ -152,6 +155,20 @@ public class BoardModel extends AbstractTableModel {
                 stack.pop();
             }
         }
+    }
+
+    public void gameTimer() {
+        Runnable task = () -> {
+            while (gameRunning) {
+                try {
+                    Thread.sleep(1000);
+                    time++;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        new Thread(task).start();
     }
 
     private void carvePath(int fromRow, int fromCol, int toRow, int toCol) {
@@ -495,10 +512,6 @@ public class BoardModel extends AbstractTableModel {
         gameRunning = false;
     }
 
-    public int getElapsedTime() {
-        return (int)((System.currentTimeMillis() - startTime) / 1000);
-    }
-
     public int getScore() {
         return score;
     }
@@ -508,9 +521,15 @@ public class BoardModel extends AbstractTableModel {
     public void addScore(int pts) {
         score += pts;
     }
+
+    public int getTime(){
+        return time;
+    }
     public synchronized void loseLife() {
         if (!gameRunning) return;
         lives--;
+        pacman.setCol(cols/2);
+        pacman.setRow(rows/2);
         if (lives <= 0) {
             gameRunning = false;
         }

@@ -52,11 +52,12 @@ public class Game extends JFrame {
         new Thread(() -> {
             while (model.isGameRunning()) {
                 SwingUtilities.invokeLater(() -> {
+                    if (model.getLives() < 2) livesLabel.setForeground(Color.RED);
                     if (model.isGameRunning()) {
                         model.checkGhostCollisions();
                     }
                     scoreLabel.setText("Score: " + model.getScore());
-                    timeLabel.setText("Time: " + model.getElapsedTime());
+                    timeLabel.setText("Time: " + model.getTime());
                     livesLabel.setText("Lives: " + model.getLives());
 
                     if (model.getLives() <= 0 && !gameEndHandled) {
@@ -78,7 +79,6 @@ public class Game extends JFrame {
     private synchronized void handleGameEnd() {
         if (gameEndHandled) return;
         gameEndHandled = true;
-
         model.stopGame();
 
         String playerName = JOptionPane.showInputDialog(this,
@@ -87,7 +87,7 @@ public class Game extends JFrame {
                 JOptionPane.PLAIN_MESSAGE);
 
         if (playerName != null && !playerName.trim().isEmpty()) {
-            ScoreEntry entry = new ScoreEntry(playerName.trim(), model.getScore(), model.getElapsedTime());
+            ScoreEntry entry = new ScoreEntry(playerName.trim(), model.getScore(), model.getTime());
             HighScoreManager.addScore(entry.getPlayer(),entry.getPoints(),entry.getTimeMillis());
         }
 
