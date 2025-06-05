@@ -10,18 +10,19 @@ public class Game extends JFrame {
         Board board = new Board(model);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel scoreLabel = new JLabel("Score: 0");
-        JLabel timeLabel = new JLabel("Time: 0");
-        JLabel livesLabel = new JLabel("Lives: 3");
-        JLabel effectsLabel = new JLabel("Effects: None");
+        JLabel scoreLabel = new YellowLabel("Score: 0");
+        JLabel timeLabel = new YellowLabel("Time: 0");
+        JLabel livesLabel = new YellowLabel("Lives: 3");
+        JLabel effectsLabel = new YellowLabel("Effects: None");
         JPanel statusPanel = new JPanel(new FlowLayout());
+        statusPanel.setBackground(Color.black);
 
         statusPanel.add(scoreLabel);
-        statusPanel.add(new JLabel(" | "));
+        statusPanel.add(new YellowLabel(" | "));
         statusPanel.add(timeLabel);
-        statusPanel.add(new JLabel(" | "));
+        statusPanel.add(new YellowLabel(" | "));
         statusPanel.add(livesLabel);
-        statusPanel.add(new JLabel(" | "));
+        statusPanel.add(new YellowLabel(" | "));
         statusPanel.add(effectsLabel);
 
         setLayout(new BorderLayout());
@@ -32,7 +33,7 @@ public class Game extends JFrame {
 
         int cellSize = 32;
         int width = cols * cellSize + 50;
-        int height = rows * cellSize + 150;
+        int height = rows * cellSize + 64;
         setSize(width, height);
         setLocationRelativeTo(null);
 

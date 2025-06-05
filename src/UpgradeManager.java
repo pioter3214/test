@@ -27,11 +27,10 @@ public class UpgradeManager {
 
         switch (type) {
             case SPEED_BOOST:
-                speedBoostEnd = currentTime + 10000;
+                speedBoostEnd = currentTime + 5000;
                 break;
             case INVINCIBILITY:
-                long duration = (invincibilityEnd > currentTime) ? 8000 : 2000;
-                invincibilityEnd = currentTime + duration;
+                invincibilityEnd = currentTime + 5000;
                 break;
             case DOUBLE_POINTS:
                 doublePointsEnd = currentTime + 15000;

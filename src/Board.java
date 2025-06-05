@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -16,6 +17,7 @@ public class Board extends JTable {
         setRowHeight(32);
 
         setFocusable(true);
+        setBackground(Color.BLACK);
 
         addKeyListener(new KeyAdapter() {
             @Override

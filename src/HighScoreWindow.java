@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,10 +21,14 @@ public class HighScoreWindow extends JFrame {
         JList<ScoreEntry> scoreList = new JList<>(listModel);
         scoreList.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
 
+        scoreList.setBackground(Color.BLACK);
+        scoreList.setForeground(Color.YELLOW);
+
         JScrollPane scrollPane = new JScrollPane(scoreList);
         scrollPane.setPreferredSize(new Dimension(400, 300));
+        scrollPane.getViewport().setBackground(Color.BLACK);
 
-        JButton closeButton = new JButton("Close");
+        JButton closeButton = new YellowButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -32,6 +37,7 @@ public class HighScoreWindow extends JFrame {
         });
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
         buttonPanel.add(closeButton);
 
         add(scrollPane, BorderLayout.CENTER);
