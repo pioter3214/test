@@ -8,6 +8,7 @@ public class Game extends JFrame {
     Game(int rows, int cols){
         model = new BoardModel(rows, cols);
         Board board = new Board(model);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel scoreLabel = new JLabel("Score: 0");
         JLabel timeLabel = new JLabel("Time: 0");
